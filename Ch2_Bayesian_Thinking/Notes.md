@@ -1,4 +1,4 @@
-# Capter 2: Bayesian Thinking
+bbbbbbbbbbbbbbbbbeeeeeeeeeeeeeeeeeeeeeeeeeeeebbbbbbbbbbbbbbbbbbbbbb# Capter 2: Bayesian Thinking
 ## Lesson 1: Introduction
 **Course Overview**
 1. Joy Ride
@@ -421,3 +421,8 @@ These distributions make it much easier to understand and summarize the probabil
 
 - the x axis in both the cases represents the main variable of interest
 
+![alt text] (https://github.com/SmrithiReddy/Intro-To-Self-Driving-Cars/blob/main/Ch2_Bayesian_Thinking/lesson8/probability-distributions.jpg "Probability Distribution Image")
+
+
+
+jhnsakzDJ WAISoJ DMLZ
