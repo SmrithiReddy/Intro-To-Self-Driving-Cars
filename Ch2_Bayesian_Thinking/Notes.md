@@ -1,4 +1,4 @@
-bbbbbbbbbbbbbbbbbeeeeeeeeeeeeeeeeeeeeeeeeeeeebbbbbbbbbbbbbbbbbbbbbb# Capter 2: Bayesian Thinking
+# Capter 2: Bayesian Thinking
 ## Lesson 1: Introduction
 **Course Overview**
 1. Joy Ride
@@ -421,8 +421,106 @@ These distributions make it much easier to understand and summarize the probabil
 
 - the x axis in both the cases represents the main variable of interest
 
-![alt text] (https://github.com/SmrithiReddy/Intro-To-Self-Driving-Cars/blob/main/Ch2_Bayesian_Thinking/lesson8/probability-distributions.jpg "Probability Distribution Image")
+![Probability Distribution Image](https://github.com/SmrithiReddy/Intro-To-Self-Driving-Cars/blob/main/Ch2_Bayesian_Thinking/lesson8/probability-distributions.jpg)
 
+### 2. Discrete vs Continuous Variables ###
+**Discrete Distribution**
+A few interesting characteristics about discrete probability distributions:
 
+- For all values on the x-axis, the y value is greater than or equal to 0.
+- For each x, the probability p(x) is equal to the y value
+- The sum of all y values is 1; there's a 100% chance that something will occur.
 
-jhnsakzDJ WAISoJ DMLZ
+Here is what we mean by the sum of all y values is 1. When flipping a coin three times, there is a 100% chance that you will either get zero heads, 1 heads, 2 heads or 3 heads (ignoring the very very small chance that the coin lands on its side).
+
+**Continuous Distribution**
+The continuous distribution has an un-broken line across the entire x-axis range. You could have a velocity of 20 or 20.5 or -10.451.
+
+ y-axis label on the continuous distribution is the: "probability density function". For the discrete probability distribution, the y-axis represented the probability of an event occurring. In the continuous case, the probability density function does not represent probability directly; instead, `the area underneath the density function curve represents probability`.
+
+ **Characteristics of a Continuous Distribution**
+- The y values must be greater than or equal to 0.
+- The probability of a specific x value occurring is equal to 0
+- The probability of an event occurring between two values of x is equal to the area under the curve between those two x values.
+- The total area under the probability density function curve is equal to 1.
+- f(x)(y-axis) need not be continuous.
+- f(x) i.e probability density function can be greater than 1. 
+
+In practice, these rules mean that the probability that velocity equals exactly 20 is zero. For a continuous distribution, you can only calculate a probability between a range of values like 19.99 and 20.01.
+Because the total area under the curve is 1, there is a 100% chance that the velocity has some value between negative infinity and positive infinity.
+
+There are many different types of continuous distributions: [link to list of continuous probability distributions](https://en.wikipedia.org/wiki/List_of_probability_distributions#Continuous_distributions).
+
+To calculate probabilities with a continuous distribution, you have to calculate the area underneath a curve. Calculating the area under a curve like in the above visualization requires calculus or a software program.
+
+**Uniform Continuous Distribution**
+The uniform continuous distribution forms a rectangle. 
+
+Therefore, Area under the curve = base * height
+![uniform continuous distribution](https://github.com/SmrithiReddy/Intro-To-Self-Driving-Cars/blob/main/Ch2_Bayesian_Thinking/lesson8/uniform-continuous.png)
+
+### Probability Distribution in Robotics ###
+In the nanodegree, you are going to see robot probability distributions represented two different ways:
+
+1. with discrete probability distributions
+2. and with continuous probability distributions
+
+Discrete probability distributions are used when you track a robot's movement across a map divided into square grids. Each grid is a discrete location where the robot could be located.
+
+## Lesson 10: Gaussian Distribution ##
+When modeling uncertainty in a sensor measurement, you'll use a Gaussian distribution. The uncertainty in a sensor measurement or the location of a pedestrian, for example, is oftentimes modelled with a Gaussian distribution.
+
+**Terms:**
+- **population** refers to the entire set of all data points. Like if you were measuring people's weights, then the population would be all people in the world.
+- **sample** refers to a part of the population. In the weights example, you might take a random sample of the population since it would be practically impossible to measure the weights of all humans.
+- **mean** is the average value, which in this case would be the average weight of all humans.
+- **standard** deviation measures the spread in the data. Does the data tend to hover around the mean, or is the data more spread out?
+
+[Useful link for a referesher/review](https://stattrek.com/sampling/populations-and-samples.aspx)
+
+### 1. Gaussian Distribution ###
+
+![Gaussian distribution](https://github.com/SmrithiReddy/Intro-To-Self-Driving-Cars/blob/main/Ch2_Bayesian_Thinking/lesson10/gaussian2.png)
+
+You might recognize this shape; it's oftentimes called a bell-shaped curve. Notice that the y-axis says "probability density function" just like the uniform continuous distribution.
+
+The x-axis currently says "x-value"; however, the x-axis could take on any continuous variable like temperature, height, or velocity.
+
+**Gaussian Equation**
+Here is the probability density function for the Gaussian distribution:
+
+$f(x) = \Large \frac{1}{\sqrt{2\pi \sigma^{2}}} e^{\frac{-(x-\mu)^{2}}{2\sigma^{2}}}$
+
+**Input Variables:**
+- $\mu$ : Mean : represents population mean
+- $\sigma$ : Standard Deviation : Represents the spread
+- x : input variable
+
+the mean and standard deviation are constants when dealing with a population. So for a specific population, the only value that varies is x.
+
+- As the mean increases while keeping the data and standard seviation constant - the curve shifts to the right
+- As the standard deviation increases, keeping everything else constant - the curve becomes wider and flatter. As the standard deviation increases, uncertainty increases as well. 
+
+Consider an example of the temperatures in San Francisco. Assume that the minimum daily temperature follows a Gaussian distribution.Say that on average, the minimum winter temperature in San Francisco is 50 degrees Fahrenheit. In other words, If you measured the minimum temperature every day of winter over all winters ever, the average value would be 50. Let's say the standard deviation is 10 degrees.
+
+**Changing Mean Visualization:** 
+
+![Gaussian distribution Average is 40](https://github.com/SmrithiReddy/Intro-To-Self-Driving-Cars/blob/main/Ch2_Bayesian_Thinking/lesson10/gaussian40.png)
+
+![Gaussian distribution Average is 50](https://github.com/SmrithiReddy/Intro-To-Self-Driving-Cars/blob/main/Ch2_Bayesian_Thinking/lesson10/gaussian50.png)
+
+![Gaussian distribution Average is 60](https://github.com/SmrithiReddy/Intro-To-Self-Driving-Cars/blob/main/Ch2_Bayesian_Thinking/lesson10/gaussian60.png)
+
+**Changing Standard Deviation(SD) Visualization:**
+
+![Gaussian distribution SD is 5](https://github.com/SmrithiReddy/Intro-To-Self-Driving-Cars/blob/main/Ch2_Bayesian_Thinking/lesson10/gaussian5.png)
+
+![Gaussian distribution SD is 10](https://github.com/SmrithiReddy/Intro-To-Self-Driving-Cars/blob/main/Ch2_Bayesian_Thinking/lesson10/gaussian10.png)
+
+![Gaussian distribution SD is 15](https://github.com/SmrithiReddy/Intro-To-Self-Driving-Cars/blob/main/Ch2_Bayesian_Thinking/lesson10/gaussian15.png)
+
+Keeping the mean at 50 - let's say the standard deviation changes to  the following values: [5, 10, 15]. 
+
+When the standard deviation is five, the distribution looks tall and skinny, which implies that the temperature is more likely to be near 50 degrees.
+
+When the standard deviation increases to 15, the distribution gets flat and wide; the probability that the temperature is near 50 goes down while the probability that the temperature is farther to the left or to the right on the x-axis is increasing.
