@@ -524,3 +524,156 @@ Keeping the mean at 50 - let's say the standard deviation changes to  the follow
 When the standard deviation is five, the distribution looks tall and skinny, which implies that the temperature is more likely to be near 50 degrees.
 
 When the standard deviation increases to 15, the distribution gets flat and wide; the probability that the temperature is near 50 goes down while the probability that the temperature is farther to the left or to the right on the x-axis is increasing.
+
+## Lesson 11: Robot Localization ##
+
+Finding the location of the robot in its environment. 
+
+To stay in lanes - Self driving cars need to know where they are in space to an accuracy of 10cm
+
+We initialize the robot's model current belief about where it might be in the world by a uniform function that assign equal weight to to every possible location in the world - Called the state of maximum confusion (Modeled as Uniform Continuous Distribution). Let's say we have identical markers/doors - and the robot is able to sense these objects (and the object location on the map is known), the probability that the robot is near one of these increases and the likelihood of its present in other areas decreases. (The new prediction made based on a prediction is called `posterior` belief)
+
+![Robot Localization: Belief](https://github.com/SmrithiReddy/Intro-To-Self-Driving-Cars/blob/main/Ch2_Bayesian_Thinking/lesson11/Belief.png)
+
+If the robot is moving right- the probability distribution can shift right, but because its motion is uncertain, the known belief curves flatten as they shift to the right. The process of moving the beliefs to the right side is called a 'convolution'. 
+
+![Robot Localization: Convolution](https://github.com/SmrithiReddy/Intro-To-Self-Driving-Cars/blob/main/Ch2_Bayesian_Thinking/lesson11/Convolution.png)
+
+Let's say, the robot senses the next door. The new belief is multipied by the convoluted belief (now the `prior`) and the robot has localized itself since it is belif wight is focused at one point. 
+
+![Robot Localization: Belief](https://github.com/SmrithiReddy/Intro-To-Self-Driving-Cars/blob/main/Ch2_Bayesian_Thinking/lesson11/TotalProbability.png)
+
+### Uniform Probability ###
+It is the equal liklihood of the robot being at any position in space. 
+
+Example: Given a 2D 10x10 grid. The robot can initially be located in any grid with the probability of 1/100. 
+
+### Probability after sense ###
+If the world is divided into known object spaces and the robot can sense the environment, the probability of the robots location relative to the known objects increases compared to the rest of the world space. 
+
+Example,
+world = ['red', 'green', 'red', 'red', 'green','green']. 
+
+initial_probability = 1/6 at each location. 
+R(B) = [1/6, 1/6, 1/6, 1/6, 1/6, 1/6]
+If the robot senses a given color then lets say that the probability that it is in that location is 0.6 and that it is in a different location is 0.2. 
+=> pHit = 0.6
+pMiss = 0.2
+
+then if the robot sees red. the new updated probability of the robots location can be given by:
+p[i] * pHit if in cell with correct color
+p[i] * pMiss it is in cell with wrong color
+
+=> robots new/updated belief of world R(B') = [0.1,1/30,0.1,0.1,1/30,1/30]
+
+Since the total does not add up to 1 and we want the total probabilty to add up to one (i.e the probability that the robot is somewhere in the world should be 1), we must normalize the distribution
+
+the normalized distribution of updated belief R(B)= R(B'_i)/Sum(R(B')) 
+
+S(R) = 0.8 //accuracy of sense when it detects red
+S(G) = 0.5 //accuracy of sense when it detect green
+
+What is the new probability that the  
+pHit = 0.8
+pMiss = 0.2
+
+### Probability after motion
+Lets say that the robot starts moving and takes 'U' steps at a time. 
+The location of the robot cannot be predicted accurately in the real world. We can therefore assign probabilities that the robot is that the location that it thinks it has moved to, and to irs surroundings a decreasing probability. 
+
+So lets say the robot takes 2 steps at a time. Let's assign probabilities:
+- The probability that it moves exactly 2 steps : $P(X_{i+2} = 0.8)$
+- Probability of undershoot by 1 step: $P(X_{i+1} = 0.1)$
+- Probability of overshoot by 1 step: $P(X_{i+3} = 0.1)$
+
+Notice that the probabilities add up to 1. 
+
+Given that the robot is at a location in a 6 position grid i.e p = [0,1,0,0,0],
+(Assume that the world is cyclic) 
+
+If the robot moves by 2 positions. what is the new updated probability given the above information:
+p_new = [0,0,0.1,0.8,0.1]
+
+With the assumption that the world is cyclic, if the robot keeps moving 2 steps at a time, the likelihood that the robot is at any given location keeps reducing until the probability distribution over the cells becomes a uniform probability distribution. The distribution with absolute least information is Uniform Probability Distribution
+
+i.e the robots probability of being in any cell cannot be lower that the equal likelihood estimation. 
+"Limit (or Stationary) Distribution" if we continue the motion is [1/6, 1/6, 1/6, 1/6, 1/6, 1/6] 
+
+This is ralated to the "balance property", according to which in our example considering location 4: P(X_4) = 0.1 * P(X_3) + 0.8 * P(X_2) + 0.1 * P(X_1)
+
+this simply means that the robot can reach the location X_4 from X_1, X_2 or X_3. The probability of reaching X_4 from a previous time step is therefore the sum of the products of probability of being in a certain location and probability of motion from that location to the new location. 
+
+### Robot Localization
+The robot's localization in the world can be thought about as the robot's initial belief of its location in the world being updated based on the sense and move cycle. 
+- When the robot senses its surrounding - it gains information i.e its entropy decreses
+- When it moves - it loses information (Convolution) - i.e it's entropy increases
+
+**Entropy** represents the amount of uncertainity in a system. The maximum uncertainity occurs when all the positions have equal probabilities. 
+
+Measure of information that the distribution has
+$ Entropy = \Sigma(-p \times log(p)) $
+
+### Sense and Move Code Example ###
+```
+p=[0.2, 0.2, 0.2, 0.2, 0.2]
+world=['green', 'red', 'red', 'green', 'green']
+measurements = ['red', 'red']
+motions = [1,1]
+pHit = 0.6
+pMiss = 0.2
+pExact = 0.8
+pOvershoot = 0.1
+pUndershoot = 0.1
+
+def sense(p, Z):
+    q=[]
+    for i in range(len(p)):
+        hit = (Z == world[i])
+        q.append(p[i] * (hit * pHit + (1-hit) * pMiss))
+    s = sum(q)
+    for i in range(len(q)):
+        q[i] = q[i] / s
+    return q
+
+def move(p, U):
+    q = []
+    for i in range(len(p)):
+        s = pExact * p[(i-U) % len(p)]
+        s = s + pOvershoot * p[(i-U-1) % len(p)]
+        s = s + pUndershoot * p[(i-U+1) % len(p)]
+        q.append(s)
+    return q
+
+for k in range(len(measurements)):
+    p = sense(p, measurements[k])
+    p = move(p, motions[k])
+    
+print p     
+
+```
+
+### Localization Summary ###
+
+- The robot maintains a function of all possible places where a road might be.
+        Belief = Probability
+- Measuremnt Update. 
+        Sense = Product of prbabilities followed by Normalization
+- Motion Update 
+        Move = Convolution = (Addidion of Reverse Engineered probabilities)
+
+### Histogram Filters
+
+Histogram filters decompose the state space into finitely many regions and represent the cumulative posterior for each region by a single probability value. When applied to finite spaces, they are called discrete Bayes filters; when applied to continuous spaces, they are known as histogram filters.
+
+
+Histogram Filters: 
+A Markov model is a model where the world was divided into discrete grids, and each grid was assigned a probability. 
+
+        -       -        -       -      -
+        0.2     0.1     0.5     0.1     0.2
+
+Such a representation of probability over spaces is called a histogram. It divides the continuous space into discrete finite grid cells and estimated the posterior distribution by a histogram over the original distribution. The histogram is a mere approximation for the continuous distribution
+
+The y axis is the probability and the x axis is the bins (space block)
+
+(Also called Monte Carlo Localization)
