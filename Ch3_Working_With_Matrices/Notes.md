@@ -54,3 +54,5 @@ From previous lass - measurement involves updating our belief and renormalizing 
 - For prediction - total probaility(convolution) is used
 
 Let's say we have an inital guassian with a very large variance and a new measurement about the localization of the vehicle. 
+
+![Tracking: Shifting the mean](https://github.com/SmrithiReddy/Intro-To-Self-Driving-Cars/blob/main/Ch3_Working_With_Matrices/lesson2/kalman_filter_posterior_estimation.PNG)
